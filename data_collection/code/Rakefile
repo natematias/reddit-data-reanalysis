@@ -1,4 +1,12 @@
 load 'environment.rb'
-task :insert_keys_to_redis
+task :store_in_memory do
   InsertKeysToRedis.kickoff
+end
+
+task :check_known_unknowns do
+
+end
+
+task :check_unknown_unknowns do
+
 end
