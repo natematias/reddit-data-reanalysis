@@ -1,0 +1,69 @@
+---
+title: "Bias in Published Academic Papers from Gaps in a Public reddit Archive"
+author: Devin Gaffney and J. Nathan Matias
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+    html_document:
+        toc: true
+        depth: 4  # upto four depths of headings (specified by #, ## and ###)
+        number_sections: false  ## if you want number sections at each table header
+        theme: spacelab  # many options for theme, this one is my favorite.
+        highlight: tango  # specifies the syntax highlighting style
+        code_folding: hide
+---
+
+On July 7, 2015, Jason Baumgartner, known as /u/Stuck_in_the_Matrix on reddit, [published a dataset](https://www.reddit.com/r/bigquery/comments/3cej2b/17_billion_reddit_comments_loaded_on_bigquery/) of "1.7 billion reddit comments" from the creation of the site. The data, which was quickly shared on Bittorrent and [the Internet Archive](https://archive.org/details/2015_reddit_comments_corpus). Within a short period, the data became the basis of a series of academic papers on topics including machine learning, social behavior, politics, breaking news, and hate speech.
+
+When exploring this data in our own research, we discovered substantial gaps and limitations in the dataset which may contribute to bias in the findings of research that relies on it. This report documents our work to identify those gaps and consider the risks to research validity that they represent.
+
+We are especially grateful to Jason Baumgartner for collaborating with us to identify these gaps and fill them in his datasets where possible.
+
+# Ways that Researchers Use the Baumgartner Data
+We found several papers that used the Baumgartner dataset, in addition to some of our own work:
+
+> Hessel, J., Tan, C., & Lee, L. (2016, March). Science, AskScience, and BadScience: On the Coexistence of Highly Related Communities. In Tenth International AAAI Conference on Web and Social Media.
+* Observes and compares sums of comment participation between subreddits
+* Observes the full chain of user history
+
+> Barbosa, S., Cosley, D., Sharma, A., & Cesar Jr, R. M. (2016, April). Averaging Gone Wrong: Using Time-Aware Analyses to Better Understand Behavior. In Proceedings of the 25th International Conference on World Wide Web (pp. 829-841). International World Wide Web Conferences Steering Committee.
+> * Compares year cohorts of individual-level behavior across all of reddit
+
+> Barbaresi, A. (2015, September). Collection, Description, and Visualization of the German Reddit Corpus. In 2nd Workshop on Natural Language Processing for Computer-Mediated Communication (pp. 7-11).
+* Analyzes German language text to identify relative commenting rates about places in Germany
+
+> Barthel, Michael. (2016) How the 2016 presidential campaign is being discussed on Reddit. Pew 
+* Observes comments about political candidates across reddit
+
+> Saleem, H.M., Dillon, K., Benesch, S., Ruths, D, (2016) A Web of Hate: Tackling Hateful Speech in Online Social Spaces
+* Trains machine learning models on comments from particular subreddits
+
+> Matias, J. N. (2016, May). Going Dark: Social Factors in Collective Action Against Platform Operators in the Reddit Blackout. In Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems (pp. 1138-1151). ACM.
+> * Observes levels of subreddit participation by moderators
+> * Observes relative participation levels of subreddit commenters in other subreddits
+> * Observes moderator participation in "metareddits"
+
+> Matias, J. N. (2016) Extended Abstract: The Cost of Solidarity: A Quasi-Experiment on The Effect of Joining A Strike on Community Participation, in the 2015 reddit Blackout. CODE@MIT
+> * Observes levels of subreddit participation by moderators
+> * Observes relative participation levels of subreddit commenters in other subreddits
+> * Observes moderator participation in "metareddits"
+> * Observes participation levels before and after the reddit blackout of July 2015
+
+> Tan, C., & Lee, L. (2015, May). All who wander: On the prevalence and characteristics of multi-community engagement. In Proceedings of the 24th International Conference on World Wide Web (pp. 1056-1066). ACM.
+* Observes histories of user accounts participating in different communities
+
+> Fire, M., & Guestrin, C. (2016). Analyzing Complex Network User Arrival Patterns and Their Effect on Network Topologies. arXiv preprint arXiv:1603.07445.
+* Observes network ties over time modeled on user histories 
+
+# What Types of Research Questions are Most Open to Bias?
+
+# Data Collection
+In correspondence, Jason has explained his process for collecting the data, which queries sequential IDs in base 36 from the reddit API in batches of 100:
+
+> I harvest the data from their /api/info endpoint.  For example, https://api.reddit.com/api/info?id=t1_c03208,t1_c03209 returns two sequential comments.  This endpoint allows for 100 ids at a time.  
+
+In our analysis, we consider data in Baumgartner's dataset from 10/15/2007 to 2/29/2016
+
+
+# Gaps in the Data
+
+# Are the Gaps Biased In Any Way?
