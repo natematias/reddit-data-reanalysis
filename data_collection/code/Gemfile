@@ -1,0 +1,6 @@
+source 'https://rubygems.org'
+gem 'sidekiq'
+gem 'redis'
+gem 'mongo_mapper'
+gem 'rake'
+gem 'pry'
