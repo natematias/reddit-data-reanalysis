@@ -1,0 +1,4 @@
+load 'environment.rb'
+task :insert_keys_to_redis
+  InsertKeysToRedis.kickoff
+end
