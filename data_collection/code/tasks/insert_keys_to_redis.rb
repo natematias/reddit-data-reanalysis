@@ -1,6 +1,5 @@
 class InsertKeysToRedis
   include Sidekiq::Worker
-  sidekiq_options :queue => :redis_set
   ##hash_get_key_field, #hash_set, and #hash_get are all copied from http://redis.io/topics/memory-optimization
   #they efficiently store the data into Redis - this demonstration of the analysis used doesn't need much memory,
   #but in order to scan all of Reddit in memory, it requires 11GB of an RDB, which expands when actually loaded in memory.

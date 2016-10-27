@@ -93,4 +93,5 @@ The detection of known unknowns and unknown unknowns is a bit more complicated t
 rake store_in_memory
 rake check_known_unknowns
 rake check_unknown_unknowns
+sidekiq -r ./environment.rb -c 50
 ```
