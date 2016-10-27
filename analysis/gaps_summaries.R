@@ -119,3 +119,21 @@ ggplot(missing_data_posts_ids, aes(ID.Partition.Base.10, Cumulative)) +
         plot.title = element_text(size = 16, colour = "black", vjust = -1)) +
   ggtitle("Missing Submission Per 100,000 (Calculated by Checking Missing IDs)")
 
+
+
+#### LANGUAGE ITEMS
+sum(missing_data_comments$Count)
+sum(missing_data_comments_ids$Missing.Count)
+min(missing_data_comments$day)
+max(missing_data_comments$day)
+
+sum(missing_data_posts$Count)
+sum(missing_data_posts_ids$Missing.Count)
+min(missing_data_posts$day)
+max(missing_data_posts$day)
+
+sum(missing_data_comments_ids$Missing.Count)
+
+signif(100*96.67*sum(missing_data_comments_ids$Missing.Count)/2182699117, 3)
+signif(100*6.835*sum(missing_data_comments_ids$Missing.Count)/236132592, 3)
+#signif(

@@ -9,7 +9,7 @@ output:
         number_sections: false  ## if you want number sections at each table header
         theme: spacelab  # many options for theme, this one is my favorite.
         highlight: tango  # specifies the syntax highlighting style
-        code_folding: hide
+        code_folding: show
 ---
 <style>
 blockquote{
@@ -23,17 +23,22 @@ load('./analysis/gaps_summaries.Rdata')
 library(ggplot2)
 ```
 
-
 On July 7, 2015, Jason Baumgartner, known as /u/Stuck_in_the_Matrix on reddit, [published a dataset](https://www.reddit.com/r/bigquery/comments/3cej2b/17_billion_reddit_comments_loaded_on_bigquery/) of "1.7 billion reddit comments" from the creation of the site. The data, which was quickly shared on Bittorrent and [the Internet Archive](https://archive.org/details/2015_reddit_comments_corpus). Within a short period, the data became the basis of a series of academic papers on topics including machine learning, social behavior, politics, breaking news, and hate speech.
 
 When exploring this data in our own research, we discovered substantial gaps and limitations in the dataset which may contribute to bias in the findings of research that relies on it. This report documents our work to identify those gaps and consider the risks to research validity that they represent.
 
-We are especially grateful to Jason Baumgartner for collaborating with us to identify these gaps and fill them in his datasets where possible.
+In summary, we identify strong validity risks to research that considers **user histories** or **network analysis**, moderate risks to research that relies on **sums of participation**, and minimal risk to machine learning research that trains models from **content analysis** rather than making representative claims about behavior and participation on reddit.
+
+We estimate that the average user's history has a maximum 4.2% chance of missing a comment and a 4.5% chance of missing a submission. We also estimate an upper bound of one missing comment per `r signif(1/(sum(missing_data_comments_ids$Missing.Count)/2182699117), 4)` comments on average, as well as a maximum of one missing submission per `r signif(1/(sum(missing_data_posts_ids$Missing.Count)/236132592), 3)` submissions on average.
+
+Across the history of reddit, the greatest gaps in comments and submissions occur in three areas: early in reddit history, during 2012, and during the middle of 2015, centering around the reddit blackout and stretching on for some time. Any research that considers these periods as distinct areas of interest may have even greater risks to validity.
+
+*We are especially grateful to Jason Baumgartner for collaborating with us to identify these gaps and fill them in his datasets where possible. **This document is a preliminary report as we work to document and fill these gaps with Jason**. The code to generate this post is [available on Github](https://github.com/natematias/reddit-data-reanalysis/blob/master/main_report.Rmd).*
 
 # Risks Associated with Uses of the Baumgartner Dataset
 We found several papers that used the Baumgartner dataset. We have categorized these by the amount of risk that gaps in the dataset pose to the final resuls of a paper:
 
-**User history analysis** papers also face the **high risks**, since a missing comment or post could hide an important part of that user's history. A network analysis may fail to include a user's participation in a particular community or interaction with a key user. Furthermore, survival analyses might mis-estimate the moment of departure or participation levels due to gaps in the dataset.
+**User history analysis** papers also face the **high risks**, since a missing comment or submission could hide an important part of that user's history. A network analysis may fail to include a user's participation in a particular community or interaction with a key user. Furthermore, survival analyses might mis-estimate the moment of departure or participation levels due to gaps in the dataset.
 
 **Network analysis** papers face **high risks**, since the presence or absence of a tie could be dependent on the missing data.
 
@@ -42,6 +47,7 @@ We found several papers that used the Baumgartner dataset. We have categorized t
 **Content analysis** that involves training machine learning systems on reddit comments face **minimal risk** becaus their systems rarely make claims about the population of reddit users.
 
 ## Risks to Conducting User History Analysis
+The following papers test hypotheses based on user histories that may have substantial gaps in them. Analyses that are especially sensitive to high-volume users are more likely, on average, to consider users whose histories have gaps.  
 
 *Hessel, J., Tan, C., & Lee, L. (2016, March). Science, AskScience, and BadScience: On the Coexistence of Highly Related Communities. In Tenth International AAAI Conference on Web and Social Media.*
 
@@ -59,20 +65,18 @@ We found several papers that used the Baumgartner dataset. We have categorized t
 
 
 ## Risks to Conducting Network Analysis
-
-*Barbaresi, A. (2015, September). Collection, Description, and Visualization of the German Reddit Corpus. In 2nd Workshop on Natural Language Processing for Computer-Mediated Communication (pp. 7-11).*
-
-* Analyzes German language text to identify relative commenting rates about places in Germany
+The following papers test network hypotheses by constructing interaction networks between users or communities, sometimes over time. Gaps represent a high risk to these papers, since missing submissions may result in unobserved ties in the network.
 
 *Tan, C., & Lee, L. (2015, May). All who wander: On the prevalence and characteristics of multi-community engagement. In Proceedings of the 24th International Conference on World Wide Web (pp. 1056-1066). ACM.*
 
-*Observes histories of user accounts participating in different communities
+* Observes histories of user accounts participating in different communities
 
 *Fire, M., & Guestrin, C. (2016). Analyzing Complex Network User Arrival Patterns and Their Effect on Network Topologies. arXiv preprint arXiv:1603.07445.*
 
 * Observes network ties over time modeled on user histories 
 
 ## Risks to Calculating Sums of Participation
+These papers test hypotheses based on participation sums within communities. Gaps that are biased toward particular communities will represent a risk to the validity of these studies.
 
 *Matias, J. N. (2016, May). Going Dark: Social Factors in Collective Action Against Platform Operators in the Reddit Blackout. In Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems (pp. 1138-1151). ACM.*
 
@@ -95,23 +99,37 @@ We found several papers that used the Baumgartner dataset. We have categorized t
 
 * Observes comments about political candidates across reddit
 
+*Barbaresi, A. (2015, September). Collection, Description, and Visualization of the German Reddit Corpus. In 2nd Workshop on Natural Language Processing for Computer-Mediated Communication (pp. 7-11).*
+
+* Analyzes German language text to identify relative commenting rates about places in Germany
+
 ## Risks to Content Analysis 
+These studies train machine learning models and conduct linguistic analysis of the Baumgartner dataset. Insofar as these studies do not make claims about populations, gaps represent a minimal risk to the validity of this research.
+
 *Saleem, H.M., Dillon, K., Benesch, S., Ruths, D, (2016) A Web of Hate: Tackling Hateful Speech in Online Social Spaces*
 
 * Trains machine learning models on comments from particular subreddits
 
-# Data Collection
+# Baumgartner's Data Collection Method
 In correspondence, Jason has explained his process for collecting the data, which queries sequential IDs in base 36 from the reddit API in batches of 100:
 
 > I harvest the data from their /api/info endpoint.  For example, https://api.reddit.com/api/info?id=t1_c03208,t1_c03209 returns two sequential comments.  This endpoint allows for 100 ids at a time.  
 
 In our analysis, we consider data in Baumgartner's dataset from 10/15/2007 to 2/29/2016
 
+# Methods of Investigating Gaps in the Data
+We investigated gaps in the data in two ways:
 
-# Gaps in the Data
+* observing missing ID numbers, assuming that reddit assigns IDs to comments and submissions along a sequence of base 36 numbers. This offers us an upper bound on the number of missing data, since it includes hypothetical comments and submissions that might have been posted to a private subreddit, might have been deleted by the company, or may never have existed in the first place. **Note:** Baumgartner's submissions dataset starts at 99700002; we don't consider any submissions before that number. Jason is looking into this.
+* querying the available corpus for missing parent IDs -- essentially comments that referred to other comments or to submissions that don't appear in the dataset. This method offers a lower bound on the number of missing comments, since there are many possible comment and submission IDs that are never referred to in our dataset
 
+For more details on the methods, with code examples, see our [appendix on data collection](https://github.com/natematias/reddit-data-reanalysis/blob/master/appendix_data_collection.md).
 
 ## Missing Comments
+Across the Baumgartner dataset from `r min(missing_data_comments$day)` through `r max(missing_data_comments$day)`, we find a lower bound of `r sum(missing_data_comments$Count)`missing references to comments that do not appear in the dataset (we show references rather than unique comments). Examining IDs, we find an upper bound of `r sum(missing_data_comments_ids$Missing.Count)` comments missing.
+
+The following figures show the cumulative and log-transformed daily counts of missing comments identified by both methods.
+
 <center>
 ```{r fig.width=7, fig.height=3, echo=FALSE}
 ggplot(missing_data_comments, aes(day, Cumulative)) +
@@ -132,6 +150,11 @@ ggplot(missing_data_comments, aes(day, log1p(Count))) +
   ylab("ln Missing Comments") +
   ggtitle("ln Missing Comments Per Day (Checking Missing Reply Parents)")
 
+```
+
+<hr/>
+
+```{r fig.width=7, fig.height=3, echo=FALSE}
 ggplot(missing_data_comments_ids, aes(ID.Partition.Base.10, Cumulative)) +
   geom_area(fill="orangered4") +
   theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
@@ -154,6 +177,9 @@ ggplot(missing_data_comments_ids, aes(ID.Partition.Base.10, log1p(Missing.Count)
 </center>
 
 ## Missing Submissions
+Across the Baumgartner dataset from `r min(missing_data_posts$day)` through `r max(missing_data_posts$day)`, we find a lower bound of `r sum(missing_data_posts$Count)`missing references to submissions that do not appear in the dataset (in this chart, we count references rather than unique submissions). Examining IDs, we find an upper bound of `r sum(missing_data_posts_ids$Missing.Count)` submissions missing.
+
+The following figures show the cumulative and log-transformed daily counts of missing submissions identified by both methods.
 <center>
 ```{r fig.width=7, fig.height=3, echo=FALSE}
 
@@ -175,7 +201,11 @@ ggplot(missing_data_posts, aes(day, log1p(Count))) +
   ylab("ln Missing Submissions") +
   ggtitle("ln Missing Submissions Per Day (Calculated by Checking Missing Reply Parents)")
 
+```
 
+<hr/>
+
+```{r fig.width=7, fig.height=3, echo=FALSE}
 
 ggplot(missing_data_posts_ids, aes(ID.Partition.Base.10, Cumulative)) +
   geom_area(fill="orangered4") +
@@ -199,7 +229,18 @@ ggplot(missing_data_posts_ids, aes(ID.Partition.Base.10, log1p(Missing.Count))) 
 ```
 </center>
 
+# Calculating the Risk From Gaps in the Data
+How much should we worry about these gaps? Although the risks to validity associated with these gaps will depend on the nature if your research question, we have done some initial calculations to estimate the maximum risks.
 
-</center>
+We count `r sum(missing_data_comments_ids$Missing.Count)` gaps in comment IDs and  `r sum(missing_data_posts_ids$Missing.Count)` gaps in submissions IDs. These counts provide the upper bounds of risk to research using the Baumgartner dataset. The dataset includes 2,182,699,117 total comments and 236,132,592 total submissions. Consequently, we expect, on average, a maximum of one missing comment per `r signif(1/(sum(missing_data_comments_ids$Missing.Count)/2182699117), 4)` comments and one missing submission per `r signif(1/(sum(missing_data_posts_ids$Missing.Count)/236132592), 3)` submissions.
 
-# Are the Gaps Biased In Any Way?
+We calculate the maximum per-user risk of missing comments and submissions by dividing the number of missing IDs over the total number of comments (2182699117) or submissions (236132592) in the Baumgartner dataset. We then multiply that with the the mean user comment and submission counts, from a random sample of 20,000 users (96.7 comments and 6.8 submissions). If we assume that the gaps are evenly distributed, a user with the mean number of comments has a `r signif(100*96.67*sum(missing_data_comments_ids$Missing.Count)/2182699117, 3)`% chance of having a missing comment, and a user with the mean number of submissions has a `r signif(100*6.835*sum(missing_data_posts_ids$Missing.Count)/236132592, 3)`% chance of having a missing submission.
+
+# Next Steps
+Jason Baumgartner is working to fill gaps in the dataset revealed by our work together. 
+
+Nathan is planning to re-analyze some of his findings based on this improved dataset, when it is available.
+
+We are communicating with authors of previously published research to help them assess the risks to the validity of their publications and take whatever action is appropriate.
+
+If you have any questions about your own research, please contact Devin Gaffney and Nathan Matias, and we will be happy to talk through those questions with you.
