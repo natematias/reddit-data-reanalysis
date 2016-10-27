@@ -11,6 +11,18 @@ output:
         highlight: tango  # specifies the syntax highlighting style
         code_folding: hide
 ---
+<style>
+blockquote{
+font-size:100%;
+}
+</style>
+
+```{r analysis, include=FALSE, cache=TRUE, cache.extra=file.info('./analysis/gaps_summaries.Rdata')}
+knitr::opts_chunk$set(echo=TRUE)
+load('./analysis/gaps_summaries.Rdata')
+library(ggplot2)
+```
+
 
 On July 7, 2015, Jason Baumgartner, known as /u/Stuck_in_the_Matrix on reddit, [published a dataset](https://www.reddit.com/r/bigquery/comments/3cej2b/17_billion_reddit_comments_loaded_on_bigquery/) of "1.7 billion reddit comments" from the creation of the site. The data, which was quickly shared on Bittorrent and [the Internet Archive](https://archive.org/details/2015_reddit_comments_corpus). Within a short period, the data became the basis of a series of academic papers on topics including machine learning, social behavior, politics, breaking news, and hate speech.
 
@@ -18,43 +30,75 @@ When exploring this data in our own research, we discovered substantial gaps and
 
 We are especially grateful to Jason Baumgartner for collaborating with us to identify these gaps and fill them in his datasets where possible.
 
-# Ways that Researchers Use the Baumgartner Data
-We found several papers that used the Baumgartner dataset, in addition to some of our own work:
+# Risks Associated with Uses of the Baumgartner Dataset
+We found several papers that used the Baumgartner dataset. We have categorized these by the amount of risk that gaps in the dataset pose to the final resuls of a paper:
 
-> Hessel, J., Tan, C., & Lee, L. (2016, March). Science, AskScience, and BadScience: On the Coexistence of Highly Related Communities. In Tenth International AAAI Conference on Web and Social Media.
+**User history analysis** papers also face the **high risks**, since a missing comment or post could hide an important part of that user's history. A network analysis may fail to include a user's participation in a particular community or interaction with a key user. Furthermore, survival analyses might mis-estimate the moment of departure or participation levels due to gaps in the dataset.
+
+**Network analysis** papers face **high risks**, since the presence or absence of a tie could be dependent on the missing data.
+
+**Sum analyses** that count the size or incidence rate of participation in subreddits or the use of certain kinds of language face **moderate risk**, especially when analyzing small communities and rare events.
+
+**Content analysis** that involves training machine learning systems on reddit comments face **minimal risk** becaus their systems rarely make claims about the population of reddit users.
+
+## Risks to Conducting User History Analysis
+
+*Hessel, J., Tan, C., & Lee, L. (2016, March). Science, AskScience, and BadScience: On the Coexistence of Highly Related Communities. In Tenth International AAAI Conference on Web and Social Media.*
+
 * Observes and compares sums of comment participation between subreddits
 * Observes the full chain of user history
 
-> Barbosa, S., Cosley, D., Sharma, A., & Cesar Jr, R. M. (2016, April). Averaging Gone Wrong: Using Time-Aware Analyses to Better Understand Behavior. In Proceedings of the 25th International Conference on World Wide Web (pp. 829-841). International World Wide Web Conferences Steering Committee.
-> * Compares year cohorts of individual-level behavior across all of reddit
+*Hessel, J., Schofield, A., Lee, L., & Mimno, D. (2015). What do Democrats do in their Spare Time? Latent Interest Detection in Multi-Community Networks. arXiv preprint arXiv:1511.03371.*
 
-> Barbaresi, A. (2015, September). Collection, Description, and Visualization of the German Reddit Corpus. In 2nd Workshop on Natural Language Processing for Computer-Mediated Communication (pp. 7-11).
+* Observes and compares sums of comment participation between subreddits
+* Observes the full chain of user history
+
+*Barbosa, S., Cosley, D., Sharma, A., & Cesar Jr, R. M. (2016, April). Averaging Gone Wrong: Using Time-Aware Analyses to Better Understand Behavior. In Proceedings of the 25th International Conference on World Wide Web (pp. 829-841). International World Wide Web Conferences Steering Committee.*
+
+* Compares year cohorts of individual-level behavior across all of reddit
+
+
+## Risks to Conducting Network Analysis
+
+*Barbaresi, A. (2015, September). Collection, Description, and Visualization of the German Reddit Corpus. In 2nd Workshop on Natural Language Processing for Computer-Mediated Communication (pp. 7-11).*
+
 * Analyzes German language text to identify relative commenting rates about places in Germany
 
-> Barthel, Michael. (2016) How the 2016 presidential campaign is being discussed on Reddit. Pew 
-* Observes comments about political candidates across reddit
+*Tan, C., & Lee, L. (2015, May). All who wander: On the prevalence and characteristics of multi-community engagement. In Proceedings of the 24th International Conference on World Wide Web (pp. 1056-1066). ACM.*
 
-> Saleem, H.M., Dillon, K., Benesch, S., Ruths, D, (2016) A Web of Hate: Tackling Hateful Speech in Online Social Spaces
-* Trains machine learning models on comments from particular subreddits
+*Observes histories of user accounts participating in different communities
 
-> Matias, J. N. (2016, May). Going Dark: Social Factors in Collective Action Against Platform Operators in the Reddit Blackout. In Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems (pp. 1138-1151). ACM.
-> * Observes levels of subreddit participation by moderators
-> * Observes relative participation levels of subreddit commenters in other subreddits
-> * Observes moderator participation in "metareddits"
+*Fire, M., & Guestrin, C. (2016). Analyzing Complex Network User Arrival Patterns and Their Effect on Network Topologies. arXiv preprint arXiv:1603.07445.*
 
-> Matias, J. N. (2016) Extended Abstract: The Cost of Solidarity: A Quasi-Experiment on The Effect of Joining A Strike on Community Participation, in the 2015 reddit Blackout. CODE@MIT
-> * Observes levels of subreddit participation by moderators
-> * Observes relative participation levels of subreddit commenters in other subreddits
-> * Observes moderator participation in "metareddits"
-> * Observes participation levels before and after the reddit blackout of July 2015
-
-> Tan, C., & Lee, L. (2015, May). All who wander: On the prevalence and characteristics of multi-community engagement. In Proceedings of the 24th International Conference on World Wide Web (pp. 1056-1066). ACM.
-* Observes histories of user accounts participating in different communities
-
-> Fire, M., & Guestrin, C. (2016). Analyzing Complex Network User Arrival Patterns and Their Effect on Network Topologies. arXiv preprint arXiv:1603.07445.
 * Observes network ties over time modeled on user histories 
 
-# What Types of Research Questions are Most Open to Bias?
+## Risks to Calculating Sums of Participation
+
+*Matias, J. N. (2016, May). Going Dark: Social Factors in Collective Action Against Platform Operators in the Reddit Blackout. In Proceedings of the 2016 CHI Conference on Human Factors in Computing Systems (pp. 1138-1151). ACM.*
+
+* Observes levels of subreddit participation by moderators
+* Observes relative participation levels of subreddit commenters in other subreddits
+* Observes moderator participation in "metareddits"
+
+*Matias, J. N. (2016) Extended Abstract: The Cost of Solidarity: A Quasi-Experiment on The Effect of Joining A Strike on Community Participation, in the 2015 reddit Blackout. CODE@MIT*
+
+* Observes levels of subreddit participation by moderators
+* Observes relative participation levels of subreddit commenters in other subreddits
+* Observes moderator participation in "metareddits"
+* Observes participation levels before and after the reddit blackout of July 2015
+
+*Newell, E., Jurgens, D., Saleem, H. M., Vala, H., Sassine, J., Armstrong, C., & Ruths, D. (2016, March). User Migration in Online Social Networks: A Case Study on Reddit During a Period of Community Unrest. In Tenth International AAAI Conference on Web and Social Media.*
+
+* Observes comment volumes within subreddits
+
+*Barthel, Michael. (2016) How the 2016 presidential campaign is being discussed on Reddit. Pew Research Center*
+
+* Observes comments about political candidates across reddit
+
+## Risks to Content Analysis 
+*Saleem, H.M., Dillon, K., Benesch, S., Ruths, D, (2016) A Web of Hate: Tackling Hateful Speech in Online Social Spaces*
+
+* Trains machine learning models on comments from particular subreddits
 
 # Data Collection
 In correspondence, Jason has explained his process for collecting the data, which queries sequential IDs in base 36 from the reddit API in batches of 100:
@@ -65,5 +109,97 @@ In our analysis, we consider data in Baumgartner's dataset from 10/15/2007 to 2/
 
 
 # Gaps in the Data
+
+
+## Missing Comments
+<center>
+```{r fig.width=7, fig.height=3, echo=FALSE}
+ggplot(missing_data_comments, aes(day, Cumulative)) +
+  geom_area(fill="orangered4") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=10), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 12, colour = "black", vjust = -1)) +
+  ylab("Cumulative Missing Comments") +
+  ggtitle("Cumulative Missing Comments Over Time (Checking Missing Reply Parents)")
+
+ggplot(missing_data_comments, aes(day, log1p(Count))) +
+  geom_line(color="cornflowerblue") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=10), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 12, colour = "black", vjust = -1)) +
+  ylab("ln Missing Comments") +
+  ggtitle("ln Missing Comments Per Day (Checking Missing Reply Parents)")
+
+ggplot(missing_data_comments_ids, aes(ID.Partition.Base.10, Cumulative)) +
+  geom_area(fill="orangered4") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=10), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 12, colour = "black", vjust = -1)) +
+  ylab("Cumulative Missing Comments") +
+  ggtitle("Missing Comments Per 1,000,000 (Calculated by Checking Missing IDs)")
+
+
+ggplot(missing_data_comments_ids, aes(ID.Partition.Base.10, log1p(Missing.Count))) +
+  geom_line(color="cornflowerblue") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=10), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 12, colour = "black", vjust = -1)) +
+  ylab("ln Missing Comments") +
+  ggtitle("ln Missing Comments Per 1,000,000 (Calculated by Checking Missing IDs)")
+```
+</center>
+
+## Missing Submissions
+<center>
+```{r fig.width=7, fig.height=3, echo=FALSE}
+
+ggplot(missing_data_posts, aes(day, Cumulative)) +
+  geom_area(fill="orangered4") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=10), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 12, colour = "black", vjust = -1)) +
+  ylab("Cumulative Missing Submissions") +
+  ggtitle("Cumulative Missing Submission Per Day (Calculated by Checking Missing Reply Parents)")
+
+ggplot(missing_data_posts, aes(day, log1p(Count))) +
+  geom_line(color="cornflowerblue") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=10), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 12, colour = "black", vjust = -1)) +
+  ylab("ln Missing Submissions") +
+  ggtitle("ln Missing Submissions Per Day (Calculated by Checking Missing Reply Parents)")
+
+
+
+ggplot(missing_data_posts_ids, aes(ID.Partition.Base.10, Cumulative)) +
+  geom_area(fill="orangered4") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=10), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 12, colour = "black", vjust = -1)) +
+  ylab("Missing Submissions") +
+  ggtitle("Missing Submission Per 100,000 (Calculated by Checking Missing IDs)")
+
+ggplot(missing_data_posts_ids, aes(ID.Partition.Base.10, log1p(Missing.Count))) +
+  geom_line(color="cornflowerblue") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=10), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(size = 12, colour = "black", vjust = -1)) +
+  ylab("ln Missing Submissions") +
+  ggtitle("ln Missing Submissions Per 100,000 (Calculated by Checking Missing IDs)")
+
+
+```
+</center>
+
+
+</center>
 
 # Are the Gaps Biased In Any Way?
