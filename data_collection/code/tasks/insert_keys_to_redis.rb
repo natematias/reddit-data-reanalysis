@@ -30,9 +30,13 @@ class InsertKeysToRedis
   end
 
   def self.kickoff
-    .each do |source_file|
+    Dir[File.dirname(__FILE__) + '/../../extracted_data/*.csv'].select{|x| x.include?("base_10")}.each do |source_file|
       self.perform_async(source_file)
     end
+  end
+
+  def self.kickoff_noop
+    puts Dir[File.dirname(__FILE__) + '/../../extracted_data/*.csv'].select{|x| x.include?("base_10")}
   end
 end
 
