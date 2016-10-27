@@ -93,5 +93,37 @@ The detection of known unknowns and unknown unknowns is a bit more complicated t
 rake store_in_memory
 rake check_known_unknowns
 rake check_unknown_unknowns
+```
+
+To run the entire system, you will need several terminal tabs as follows:
+
+Run MongoDB:
+
+```bash
+sudo mongod
+```
+
+Run Redis:
+
+```bash
+sudo service redis-server start # OR just redis-server
+```
+
+Start workers (within the code/ directory):
+
+```bash
 sidekiq -r ./environment.rb -c 50
 ```
+
+Then, in sequence, you must run each phase of analysis, wait for the sidekiq tasks to complete, and then once those are complete, move on to the next step. Run each rake task in sequence as above (if you do not wait for the sidekiq tasks to all complete, you will be very sorry! Unexpected results may occur).
+
+Finally, you can go in using `irb` and inspect some of the errors found by the software:
+
+```bash
+MissingRedditDiagnosticSubmission.count #This is the number of known unknowns for submissions
+MissingRedditDiagnosticComment.count #This is the number of known unknowns for comments
+ParseSubmissionIdSpace.count #This is the number of unknown unknown gaps - each of these records contain a 'width' field which indicates the size of the gap, or the number of missing ids
+ParseCommentIdSpace.count #This is the number of unknown unknown gaps - each of these records contain a 'width' field which indicates the size of the gap, or the number of missing ids
+```
+
+Please direct any questions about this process to Devin Gaffney (@dgaffney on Github, @dgaff on Twitter)
