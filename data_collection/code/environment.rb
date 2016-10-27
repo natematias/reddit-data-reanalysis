@@ -1,3 +1,6 @@
+def base_36_to_int(reddit_id)
+  reddit_id.split("_").last.to_i(36)
+end
 require 'csv'
 require 'sidekiq'
 require 'sidekiq/api'
