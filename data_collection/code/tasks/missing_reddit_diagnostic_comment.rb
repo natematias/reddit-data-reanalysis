@@ -23,12 +23,12 @@ class MissingRedditDiagnosticComment
     if !comment_parents.empty?
       found_comment_parents = comment_parents.collect{|c| c["parent_id"] if InsertKeysToRedis.new.hash_get(REDIS_COMMENTS,"obj:"+c["parent_id_int"].to_s) == "1"}.compact.uniq
       missing_parents = comment_parents.select{|r| !found_comment_parents.include?(r["parent_id"])}
-      MissingRedditDiagnosticComment.collection.insert(missing_parents.collect{|r| {subreddit: r["subreddit"], comment_id: r["parent_id"], comment_id_int: base_36_to_int(r["parent_id"]), referring_comment_id: r["comment_id"], referring_c$
+      MissingRedditDiagnosticComment.collection.insert(missing_parents.collect{|r| {subreddit: r["subreddit"], comment_id: r["parent_id"], comment_id_int: base_36_to_int(r["parent_id"]), referring_comment_id: r["comment_id"], referring_comment_id_int: base_36_to_int(r["comment_id"]), referring_time: Time.parse(r["time"])}}) if !missing_parents.empty?
     end
     if !post_parents.empty?
       found_post_parents = post_parents.collect{|c| c["parent_id"] if InsertKeysToRedis.new.hash_get(REDIS_SUBMISSIONS,"obj:"+c["parent_id_int"].to_s) == "1"}.compact
       missing_parents = post_parents.select{|r| !found_post_parents.include?(r["parent_id"])}
-      MissingRedditDiagnosticSubmission.collection.insert(missing_parents.select{|r| !found_post_parents.include?(r["parent_id"])}.collect{|r| {subreddit: r["subreddit"], submission_id: r["parent_id"], submission_id_int: base_36_to_int(r$
+      MissingRedditDiagnosticSubmission.collection.insert(missing_parents.select{|r| !found_post_parents.include?(r["parent_id"])}.collect{|r| {subreddit: r["subreddit"], submission_id: r["parent_id"], submission_id_int: base_36_to_int(r["parent_id"]), referring_comment_id: r["comment_id"], referring_comment_id_int: base_36_to_int(r["comment_id"]), referring_time: Time.parse(r["time"])}}) if !missing_parents.empty?
     end
   end
 end
