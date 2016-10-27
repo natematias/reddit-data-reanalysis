@@ -10,6 +10,8 @@ class ParseSubmissionIdSpace
   key :file, String
   key :next_file, String
   def perform(source_file)
+    IdSpacer.check_gaps(source_file, ParseSubmissionIdSpace)
+
     to_insert = []
     prev_index = ParseSubmissionIdSpace.source_files.index(source_file)-1
     next_index = ParseSubmissionIdSpace.source_files.index(source_file)+1
@@ -50,10 +52,6 @@ class ParseSubmissionIdSpace
     ParseSubmissionIdSpace.collection.insert(to_insert) if !to_insert.empty?
   end
 
-  def self.dir
-    "/home/dgaff/submission_ids"
-  end
-
   def self.kickoff
     self.source_files.each do |source_file|
       self.perform_async(source_file)
@@ -61,6 +59,6 @@ class ParseSubmissionIdSpace
   end
 
   def self.source_files
-    `ls #{self.dir}`.split("\n").reject{|x| x.include?(".csv")}.sort
+    Dir[File.dirname(__FILE__) + '/../../extracted_data/*.csv'].select{|x| x.include?("submissions") && x.include?("_sorted")}
   end
 end
