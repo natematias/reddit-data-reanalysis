@@ -1,0 +1,32 @@
+---
+title: "Bias in Published Academic Papers from Gaps in a Public reddit Archive"
+author: Devin Gaffney and J. Nathan Matias
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+    html_document:
+        toc: true
+        depth: 4  # upto four depths of headings (specified by #, ## and ###)
+        number_sections: false  ## if you want number sections at each table header
+        theme: spacelab  # many options for theme, this one is my favorite.
+        highlight: tango  # specifies the syntax highlighting style
+        code_folding: hide
+---
+
+On July 7, 2015, Jason Baumgartner, known as /u/Stuck_in_the_Matrix on reddit, [published a dataset](https://www.reddit.com/r/bigquery/comments/3cej2b/17_billion_reddit_comments_loaded_on_bigquery/) of "1.7 billion reddit comments" from the creation of the site. The data, which was quickly shared on Bittorrent and [the Internet Archive](https://archive.org/details/2015_reddit_comments_corpus). Within a short period, the data became the basis of a series of academic papers on topics including machine learning, social behavior, politics, breaking news, and hate speech.
+
+When exploring this data in our own research, we discovered substantial gaps and limitations in the dataset which may contribute to bias in the findings of research that relies on it. This report documents our work to identify those gaps and consider the risks to research validity that they represent.
+
+We are especially grateful to Jason Baumgartner for collaborating with us to identify these gaps and fill them in his datasets where possible.
+
+# Ways that Researchers Use the Baumgartner Data
+In our search for papers that use the Baumgartner data, we found the following 
+
+
+# Data Collection Methods For the Baumgartner Dataset
+In correspondence, Jason has explained his process for collecting the data, which queries sequential IDs in base 36 from the reddit API in batches of 100:
+
+> I harvest the data from their /api/info endpoint.  For example, https://api.reddit.com/api/info?id=t1_c03208,t1_c03209 returns two sequential comments.  This endpoint allows for 100 ids at a time.  
+
+# Gaps in the Data
+
+# Are the Gaps Biased In Any Way?
