@@ -18,7 +18,7 @@ class ParseSourceFile
   def self.kickoff
     MissingRedditDiagnosticComment.collection.drop
     MissingRedditDiagnosticSubmission.collection.drop
-    $redis_submissions.set("total_complete", "0")
+    REDIS_SUBMISSIONS.set("total_complete", "0")
     Dir[File.dirname(__FILE__) + '/../../extracted_data/*.csv'].select{|x| x.include?("comment") && x.include?("sparse")}.each do |source_file|
       self.perform_async(source_file)
     end

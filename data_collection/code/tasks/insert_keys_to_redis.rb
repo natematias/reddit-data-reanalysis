@@ -29,7 +29,7 @@ class InsertKeysToRedis
   #for each source file, determine if the file refers to submissions (posts) or comments. Then, walk through and store all ids.
   def perform(source_file)
     metric_name = source_file.include?("submission") ? "submission_count" : "comment_count"
-    redis_cli = source_file.include?("submission") ? $redis_submissions : $redis_comments
+    redis_cli = source_file.include?("submission") ? REDIS_SUBMISSIONS : REDIS_COMMENTS
     CSV.foreach(source_file) do |row|
       hash_set(redis_cli,"obj:"+base_36_to_int(row[2]).to_s,"1")
       redis_cli.incr(metric_name)
