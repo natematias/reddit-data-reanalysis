@@ -13,7 +13,7 @@ class IdSpacer
     last_number = nil
     next_number = nil
     width = 0
-    CSV.foreach(object_type.dir+"/"+source_file) do |id|
+    CSV.foreach(source_file) do |id|
       if to_insert.length >= 3000
         object_type.collection.insert(to_insert)
         to_insert = []
