@@ -4,9 +4,10 @@ task :store_in_memory do
 end
 
 task :check_known_unknowns do
-
+  
 end
 
 task :check_unknown_unknowns do
-
+  ParseSubmissionIdSpace.kickoff
+  ParseCommentIdSpace.kickoff
 end

@@ -1,6 +1,12 @@
 class InsertKeysToRedis
   include Sidekiq::Worker
   sidekiq_options :queue => :redis_set
+  ##hash_get_key_field, #hash_set, and #hash_get are all copied from http://redis.io/topics/memory-optimization
+  #they efficiently store the data into Redis - this demonstration of the analysis used doesn't need much memory,
+  #but in order to scan all of Reddit in memory, it requires 11GB of an RDB, which expands when actually loaded in memory.
+  #without this optimization, the author was unable to store all IDs in the most simple key/value implementation with Redis
+  #within 64GB of ram, which was the limit available to the author. Please follow the tutorial at the above URL for 
+  #actual implementation and replication
   def hash_get_key_field(key)
       s = key.split(":")
       if s[1].length > 2
@@ -20,6 +26,7 @@ class InsertKeysToRedis
       r.hget(kf[:key],kf[:field])
   end
   
+  #for each source file, determine if the file refers to submissions (posts) or comments. Then, walk through and store all ids.
   def perform(source_file)
     metric_name = source_file.include?("submission") ? "submission_count" : "comment_count"
     redis_cli = source_file.include?("submission") ? $redis_submissions : $redis_comments
@@ -29,8 +36,9 @@ class InsertKeysToRedis
     end;false
   end
 
+  #grab all relevant base_10 files and store all keys from file to memory in a hashmap
   def self.kickoff
-    Dir[File.dirname(__FILE__) + '/../../extracted_data/*.csv'].select{|x| x.include?("base_10")}.each do |source_file|
+    Dir[File.dirname(__FILE__) + '/../../extracted_data/*.csv'].select{|x| x.include?("base_10") && x.include?("sorted")}.each do |source_file|
       self.perform_async(source_file)
     end
   end

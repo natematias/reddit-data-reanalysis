@@ -1,9 +1,3 @@
-to_insert = []
-prev_index = ParseSubmissionIdSpace.source_files.index(source_file)-1
-next_index = ParseSubmissionIdSpace.source_files.index(source_file)+1
-prev_file = ParseSubmissionIdSpace.source_files[ParseSubmissionIdSpace.source_files.index(source_file)-1]
-file = ParseSubmissionIdSpace.source_files[ParseSubmissionIdSpace.source_files.index(source_file)]
-next_file = ParseSubmissionIdSpace.source_files[ParseSubmissionIdSpace.source_files.index(source_file)+1]
 class IdSpacer
   def self.check_gaps(source_file, object_type)
     to_insert = []
