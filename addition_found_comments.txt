@@ -1,0 +1,43 @@
+#ruby create found_comments.csv
+require 'time'
+require 'csv'
+require 'json'
+comment_data = File.read("found_missing_comments").split("\n").collect{|x| JSON.parse(x)};false
+comment_data = comment_data.sort_by{|c| c["created_utc"]};false
+timeline = {}
+comment_data.each do |comment|
+  timeline[Time.parse(Time.at(comment["created_utc"]).strftime("%Y-%m-%d 00:00:00"))] ||= 0
+  timeline[Time.parse(Time.at(comment["created_utc"]).strftime("%Y-%m-%d 00:00:00"))] += 1
+end;false
+csv = CSV.open("found_comments.csv", "w")
+csv << ["Date", "Count", "Cumulative"]
+cumulative_count = 0
+timeline.sort_by{|k,v| k}.each do |k,v|
+  cumulative_count += v
+  csv << [k.strftime("%m/%d/%Y"), v, cumulative_count]
+end;false
+csv.close
+#R generate plot for found comments
+library(ggplot2)
+library(lubridate)
+
+found_comments <- read.csv("found_comments.csv")
+found_comments$day <- as.Date(found_comments$Date, format="%m/%d/%Y")
+ggplot(found_comments, aes(day, log1p(Count))) +
+  geom_line(color="cornflowerblue") +
+  labs(y="ln Cumulative Found Comments",x="day") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=14), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("ln Found Comments Per Day")
+
+ggplot(found_comments, aes(day, Cumulative)) +
+  geom_area(fill="orangered4") +
+  labs(y="Cumulative Found Comments",x="day") +
+  theme(axis.text.x = element_text(hjust=0, vjust=1, size=14), 
+        axis.title=element_text(size=14), 
+        panel.background = element_rect(fill = "white"),
+        plot.title = element_text(hjust = 0.5)) +
+  ggtitle("Cumulative Found Comments Over Time")
+
