@@ -24,12 +24,14 @@ class ExtractIDs
   def kickoff_sequential
     `mkdir -p #{SETTINGS["download_path"]}/comments_ids`
     comment_manifest.each do |year, month_files|
+      `mkdir -p #{SETTINGS["download_path"]}/comments_ids/#{year}`
       month_files.each do |month_file|
         ExtractIDs.new.perform(year, month_file, "comments")
       end
     end
     `mkdir -p #{SETTINGS["download_path"]}/submissions_ids`
     submission_manifest.each do |year, month_files|
+      `mkdir -p #{SETTINGS["download_path"]}/submissions_ids/#{year}`
       month_files.each do |month_file|
         ExtractIDs.new.perform(year, month_file, "submissions")
       end
