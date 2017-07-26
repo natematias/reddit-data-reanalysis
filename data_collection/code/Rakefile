@@ -1,4 +1,8 @@
 load 'environment.rb'
+task :download_baumgartner do
+  Download.new.download_all
+end
+
 task :store_in_memory do
   InsertKeysToRedis.kickoff
 end

@@ -1,3 +1,5 @@
+*.bz2
+*.yml
 # History files
 .Rhistory
 .Rapp.history
