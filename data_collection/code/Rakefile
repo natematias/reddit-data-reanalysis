@@ -3,6 +3,10 @@ task :download_baumgartner do
   Download.new.download_all
 end
 
+task :extract_ids do
+  ExtractIDs.new.kickoff_sequential
+end
+
 task :store_in_memory do
   InsertKeysToRedis.kickoff
 end
