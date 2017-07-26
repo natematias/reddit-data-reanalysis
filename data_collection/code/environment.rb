@@ -4,9 +4,6 @@ end
 def base_10_to_36(number)
   number.to_s(36)
 end
-Dir[File.dirname(__FILE__) + '/models/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
-Dir[File.dirname(__FILE__) + '/tasks/*.rb'].each {|file| require file }
 require 'csv'
 require 'sidekiq'
 require 'sidekiq/api'
@@ -16,6 +13,9 @@ require 'redis'
 require 'mongo_mapper'
 require 'pry'
 require 'yaml'
+Dir[File.dirname(__FILE__) + '/models/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/tasks/*.rb'].each {|file| require file }
 SETTINGS = YAML.load(File.read("config.yml")) rescue {"download_path" => "#{`pwd`.strip}/../data"}
 REDIS_SUBMISSIONS = Redis.new(db: 2)
 REDIS_COMMENTS = Redis.new(db: 3)
