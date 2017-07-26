@@ -18,10 +18,11 @@ class ExtractIDs
   end
   
   def perform(year, file, data_type)
-    `bzip2 -dck #{SETTINGS["download_path"]}/#{data_type}/#{year}/#{file} | jq -r '.id' | ./strtonum_bases.awk > #{SETTINGS["download_path"]}/#{data_type}_ids/#{year}/#{file}`
+    `bzip2 -dck #{SETTINGS["download_path"]}/#{data_type}/#{year}/#{file} | jq -r '.id' | ./strtonum_bases.awk | LC_ALL=C sort -nt',' -k1,1 -T #{SETTINGS["download_path"]}/tmp > #{SETTINGS["download_path"]}/#{data_type}_ids/#{year}/#{file.gsub("bz2", "csv")}`
   end
   
   def kickoff_sequential
+    `mkdir -p #{SETTINGS["download_path"]}/tmp`
     `mkdir -p #{SETTINGS["download_path"]}/comments_ids`
     comment_manifest.each do |year, month_files|
       `mkdir -p #{SETTINGS["download_path"]}/comments_ids/#{year}`
@@ -39,6 +40,7 @@ class ExtractIDs
   end
 
   def kickoff
+    `mkdir -p #{SETTINGS["download_path"]}/tmp`
     `mkdir -p #{SETTINGS["download_path"]}/comments_ids`
     comment_manifest.each do |year, month_files|
       `mkdir -p #{SETTINGS["download_path"]}/comments_ids/#{year}`
