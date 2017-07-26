@@ -6,6 +6,7 @@ class ExtractIDs
     `ls #{SETTINGS["download_path"]}/comments`.split("\n").each do |year|
       manifest[year] ||= `ls #{SETTINGS["download_path"]}/comments/#{year}`.split("\n")
     end
+    manifest
   end
 
   def submission_manifest
@@ -13,6 +14,7 @@ class ExtractIDs
     `ls #{SETTINGS["download_path"]}/submissions`.split("\n").each do |year|
       manifest[year] ||= `ls #{SETTINGS["download_path"]}/submissions/#{year}`.split("\n")
     end
+    manifest
   end
   
   def perform(year, file, data_type)
