@@ -18,7 +18,7 @@ class ExtractIDs
   end
   
   def perform(year, file, data_type)
-    `bzip2 -dck #{SETTINGS["download_path"]}/#{data_type}/#{year}/#{month_file} | jq -r '.id' | ./strtonum_bases.awk > #{SETTINGS["download_path"]}/#{data_type}_ids/#{year}/#{month_file}`
+    `bzip2 -dck #{SETTINGS["download_path"]}/#{data_type}/#{year}/#{file} | jq -r '.id' | ./strtonum_bases.awk > #{SETTINGS["download_path"]}/#{data_type}_ids/#{year}/#{month_file}`
   end
   
   def kickoff_sequential
