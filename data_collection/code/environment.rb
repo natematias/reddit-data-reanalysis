@@ -13,7 +13,7 @@ require 'redis'
 require 'mongo_mapper'
 require 'pry'
 require 'yaml'
-SETTINGS = YAML.load(File.read("config.yml")) rescue {"download_path": "#{`pwd`.strip}/../data"}
+SETTINGS = YAML.load(File.read("config.yml")) rescue {"download_path" => "#{`pwd`.strip}/../data"}
 REDIS_SUBMISSIONS = Redis.new(db: 2)
 REDIS_COMMENTS = Redis.new(db: 3)
 MongoMapper.connection = Mongo::MongoClient.new("localhost", 27017, :pool_size => 25, :op_timeout => 600000, :timeout => 600000, :pool_timeout => 600000)
