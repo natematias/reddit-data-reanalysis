@@ -46,16 +46,16 @@ class Download
       `mkdir -p #{SETTINGS["download_path"]}/comments`
       `mkdir -p #{SETTINGS["download_path"]}/comments/#{year}`
       months.each do |month|
-        `mkdir -p #{SETTINGS["download_path"]}/comments/#{year}/#{month}`
-        `wget -P #{SETTINGS["download_path"]}/comments/#{year}/#{month} #{comment_link(year, month)}`
+        `mkdir -p #{SETTINGS["download_path"]}/comments/#{year}`
+        `wget -P #{SETTINGS["download_path"]}/comments/#{year} #{comment_link(year, month)}`
       end
     end
     submissions_to_date.each do |year, months|
       `mkdir -p #{SETTINGS["download_path"]}/submissions`
       `mkdir -p #{SETTINGS["download_path"]}/submissions/#{year}`
       months.each do |month|
-        `mkdir -p #{SETTINGS["download_path"]}/submissions/#{year}/#{month}`
-        `wget -P #{SETTINGS["download_path"]}/submissions/#{year}/#{month} #{submission_link(year, month)}`
+        `mkdir -p #{SETTINGS["download_path"]}/submissions/#{year}`
+        `wget -P #{SETTINGS["download_path"]}/submissions/#{year} #{submission_link(year, month)}`
       end
     end
   end
