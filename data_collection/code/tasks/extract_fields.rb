@@ -18,7 +18,11 @@ class ExtractFields
   end
   
   def perform(year, file, data_type)
-    `bzip2 -dck #{SETTINGS["download_path"]}/#{data_type}/#{year}/#{file} | jq 'def to_i(base): explode | reverse | map(if . > 96  then . - 87 else . - 48 end) | reduce .[] as $c ([1,0]; (.[0] * base) as $b | [$b, .[1] + (.[0] * $c)]) | .[1]; [(.created_utc | tostring), .subreddit, .id, (.id | to_i(36)), .parent_id, (.parent_id | split("_") | last | to_i(36))] | @csv' | LC_ALL=C sort -nt',' -k4,4 -T #{SETTINGS["download_path"]}/tmp > #{SETTINGS["download_path"]}/#{data_type}_extracted/#{year}/#{file.gsub("bz2", "csv")}`
+    if data_type == "comments"
+      `bzip2 -dck #{SETTINGS["download_path"]}/#{data_type}/#{year}/#{file} | jq 'def to_i(base): explode | reverse | map(if . > 96  then . - 87 else . - 48 end) | reduce .[] as $c ([1,0]; (.[0] * base) as $b | [$b, .[1] + (.[0] * $c)]) | .[1]; [(.created_utc | tostring), .subreddit, .id, (.id | to_i(36)), .parent_id, (.parent_id | split("_") | last | to_i(36))] | @csv' | LC_ALL=C sort -nt',' -k4,4 -T #{SETTINGS["download_path"]}/tmp > #{SETTINGS["download_path"]}/#{data_type}_extracted/#{year}/#{file.gsub("bz2", "csv")}`
+    elsif data_type == "submissions"
+      `bzip2 -dck #{SETTINGS["download_path"]}/#{data_type}/#{year}/#{file} | jq 'def to_i(base): explode | reverse | map(if . > 96  then . - 87 else . - 48 end) | reduce .[] as $c ([1,0]; (.[0] * base) as $b | [$b, .[1] + (.[0] * $c)]) | .[1]; [(.created_utc | tostring), .subreddit, .id, (.id | to_i(36))] | @csv' | LC_ALL=C sort -nt',' -k4,4 -T #{SETTINGS["download_path"]}/tmp > #{SETTINGS["download_path"]}/#{data_type}_extracted/#{year}/#{file.gsub("bz2", "csv")}`
+    end
   end
   
   def kickoff_sequential
