@@ -61,4 +61,3 @@ class ExtractFields
     end
   end
 end
-
