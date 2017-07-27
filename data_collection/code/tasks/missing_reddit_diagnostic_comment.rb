@@ -8,7 +8,6 @@ class MissingRedditDiagnosticComment
   key :referring_comment_id_int, Integer
   key :referring_time, Time
 
-
   def perform(rows)
     REDIS_SUBMISSIONS.incr("total_complete")
     comment_parents = []
