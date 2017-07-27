@@ -37,7 +37,7 @@ class InsertKeysToRedis
     redis_cli = data_type == "submissions" ? REDIS_SUBMISSIONS : REDIS_COMMENTS
     mapped = {}
     count = 0
-    CSV.foreach("#{SETTINGS["download_path"]}/comments_ids/#{year}/#{file}") do |row|
+    CSV.foreach("#{SETTINGS["download_path"]}/#{data_type}_ids/#{year}/#{file}") do |row|
       mapped[row.first[0..-4]] ||= []
       mapped[row.first[0..-4]] << row.first[-3..-1]
       count += 1
