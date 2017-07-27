@@ -12,7 +12,7 @@ task :store_in_memory do
 end
 
 task :check_known_unknowns do
-  ParseSourceFile.kickoff
+#  ParseSourceFile.kickoff
 end
 
 task :check_unknown_unknowns do

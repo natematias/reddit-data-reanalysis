@@ -26,14 +26,14 @@ class CheckParentReferences
     REDIS_SUBMISSIONS.set("total_complete", "0")
     `ls #{SETTINGS["download_path"]}/comments_ids`.split("\n").each do |year|
       `ls #{SETTINGS["download_path"]}/comments_ids/#{year}`.split("\n").each do |file|
-        ParseSourceFile.perform_async(year, file, "comments")
+        CheckParentReferences.perform_async(year, file, "comments")
       end
     end
   end
 end
 
-`ls #{SETTINGS["download_path"]}/submissions_ids`.split("\n").each do |year|
-  `ls #{SETTINGS["download_path"]}/submissions_ids/#{year}`.split("\n").each do |file|
-    ParseSourceFile.perform_async(year, file, "submissions")
-  end
-end
+#`ls #{SETTINGS["download_path"]}/submissions_ids`.split("\n").each do |year|
+#  `ls #{SETTINGS["download_path"]}/submissions_ids/#{year}`.split("\n").each do |file|
+#    CheckGaps.perform_async(year, file, "submissions")
+#  end
+#end
