@@ -42,7 +42,7 @@ class InsertKeysToRedis
       mapped[row.first[0..-4]] << row.first[-3..-1]
       count += 1
       if count > 100000
-        hash_m_set(r,mapped)
+        hash_m_set(redis_cli,mapped)
         mapped = {}
         count = 0
       end
