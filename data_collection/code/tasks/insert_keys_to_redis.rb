@@ -47,6 +47,7 @@ class InsertKeysToRedis
         count = 0
       end
     end;false
+    hash_m_set(redis_cli,mapped)
     #8.627484257263278 with 1k
     #8.495383921663342 with 10k
     #8.256297051107357 with 100k
