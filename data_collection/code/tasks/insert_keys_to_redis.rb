@@ -38,8 +38,8 @@ class InsertKeysToRedis
     mapped = {}
     count = 0
     CSV.foreach("#{SETTINGS["download_path"]}/#{data_type}_ids/#{year}/#{file}") do |row|
-      mapped[row.first[0..-4]] ||= []
-      mapped[row.first[0..-4]] << row.first[-3..-1]
+      mapped[row.first[0..-3]] ||= []
+      mapped[row.first[0..-3]] << row.first[-2..-1]
       count += 1
       if count > 100000
         hash_m_set(redis_cli,mapped)
