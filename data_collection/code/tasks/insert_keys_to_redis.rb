@@ -8,8 +8,8 @@ class InsertKeysToRedis
   #within 64GB of ram, which was the limit available to the author. Please follow the tutorial at the above URL for 
   #actual implementation and replication
   def hash_get_key_field(key)
-    if key.length > 3
-      {:key => key[0..-4], :field => key[-3..-1]}
+    if key.length > 2
+      {:key => key[0..-3], :field => key[-2..-1]}
     else
       {:key => "", :field => key}
     end
