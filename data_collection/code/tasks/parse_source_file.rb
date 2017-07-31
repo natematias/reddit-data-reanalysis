@@ -1,6 +1,6 @@
 class CheckParentReferences
   include Sidekiq::Worker
-  sidekiq_options queue: :psf
+  sidekiq_options queue: :cpr
   def perform(year, file, data_type)
     current_rows = []
     CSV.foreach("#{SETTINGS["download_path"]}/#{data_type}_ids/#{year}/#{file}") do |row|
@@ -13,11 +13,11 @@ class CheckParentReferences
         while Sidekiq::Queue.new.size > 1000
           sleep(1)
         end
-        ParentReferences.perform_async(current_rows) if current_rows.empty? == false
+        ParentReference.collection.insert(current_rows) if current_rows.empty? == false
         current_rows = []
       end
     end
-    ParentReferences.perform_async(current_rows) if current_rows.empty? == false
+    ParentReference.collection.insert(current_rows) if current_rows.empty? == false
   end
 
   def self.kickoff
