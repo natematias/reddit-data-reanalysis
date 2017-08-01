@@ -4,6 +4,7 @@ class CheckParentReferences
   def perform(year, file, data_type)
     current_rows = []
     `mkdir #{SETTINGS["download_path"]}/#{data_type}_marked`
+    `mkdir #{SETTINGS["download_path"]}/#{data_type}_marked/#{year}`
     csv = CSV.open("#{SETTINGS["download_path"]}/#{data_type}_marked/#{year}/#{file}", "w")
     File.foreach("#{SETTINGS["download_path"]}/#{data_type}_extracted/#{year}/#{file}") do |row|
       row = row.split(",").collect{|x| x.strip.gsub("\\", "").gsub("\"", "")}
