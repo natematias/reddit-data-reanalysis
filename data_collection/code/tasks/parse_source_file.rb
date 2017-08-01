@@ -4,7 +4,7 @@ class CheckParentReferences
   def perform(year, file, data_type)
     current_rows = []
     `mkdir #{SETTINGS["download_path"]}/#{data_type}_marked`
-    csv = CSV.open("#{SETTINGS["download_path"]}/#{data_type}_marked/#{year}/#{file}")
+    csv = CSV.open("#{SETTINGS["download_path"]}/#{data_type}_marked/#{year}/#{file}", "w")
     File.foreach("#{SETTINGS["download_path"]}/#{data_type}_extracted/#{year}/#{file}") do |row|
       row = row.split(",").collect{|x| x.strip.gsub("\\", "").gsub("\"", "")}
       parent_type = row[4].split("_").first == "t3" ? "submissions" : "comments"
