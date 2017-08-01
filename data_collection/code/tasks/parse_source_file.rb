@@ -5,7 +5,7 @@ class CheckParentReferences
     current_rows = []
     File.foreach("#{SETTINGS["download_path"]}/#{data_type}_extracted/#{year}/#{file}") do |row|
       row = row.split(",").collect{|x| x.strip.gsub("\\", "").gsub("\"", "")}
-      parent_type = "comments"
+      parent_type = row[4].split("_").first == "t3" ? "submissions" : "comments"
       metric_name = parent_type == "submissions" ? "submission_count" : "comment_count"
       redis_cli = parent_type == "submissions" ? REDIS_SUBMISSIONS : REDIS_COMMENTS
       found = InsertKeysToRedis.new.hash_get(redis_cli,row[5].to_s) == "1" ? true : false
