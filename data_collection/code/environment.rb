@@ -14,10 +14,12 @@ require 'mongo_mapper'
 require 'pry'
 require 'yaml'
 SETTINGS = YAML.load(File.read("config.yml")) rescue {"download_path" => "#{`pwd`.strip}/../data"}
+MORE_SETTINGS = YAML.load(File.read("settings.json")) rescue {"download_path" => "#{`pwd`.strip}/../data"}
 Dir[File.dirname(__FILE__) + '/models/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/lib/*.rb'].each {|file| require file }
 Dir[File.dirname(__FILE__) + '/tasks/*.rb'].each {|file| require file }
 REDIS_SUBMISSIONS = Redis.new(db: 2)
 REDIS_COMMENTS = Redis.new(db: 3)
 MongoMapper.connection = Mongo::MongoClient.new("localhost", 27017, :pool_size => 25, :op_timeout => 600000, :timeout => 600000, :pool_timeout => 600000)
+MongoMapper.connection["admin"].authenticate(MORE_SETTINGS["db_user"], MORE_SETTINGS["db_password"])
 MongoMapper.database = "reddit_diagnostic_test"
