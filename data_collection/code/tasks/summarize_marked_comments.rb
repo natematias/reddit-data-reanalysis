@@ -1,38 +1,34 @@
-class CheckParentReferences
+class CountParentReferences
   include Sidekiq::Worker
   sidekiq_options queue: :cpr
-  def perform(year, file, data_type)
-    current_rows = []
+  def perform(year, file)
+    daily_counts = {}
+    hourly_counts = {}
     `mkdir #{SETTINGS["download_path"]}/#{data_type}_marked_summarized`
     `mkdir #{SETTINGS["download_path"]}/#{data_type}_marked_summarized/#{year}`
-    csv = CSV.open("#{SETTINGS["download_path"]}/#{data_type}_marked_summarized/#{year}/#{file}", "w")
+    daily_csv = CSV.open("#{SETTINGS["download_path"]}/#{data_type}_marked_summarized/#{year}/daily_#{file}", "w")
+    hourly_csv = CSV.open("#{SETTINGS["download_path"]}/#{data_type}_marked_summarized/#{year}/hourly_#{file}", "w")
     CSV.foreach("#{SETTINGS["download_path"]}/#{data_type}_marked/#{year}/#{file}") do |row|
-      row = row.split(",").collect{|x| x.strip.gsub("\\", "").gsub("\"", "")}
-      parent_type = row[4].split("_").first == "t3" ? "submissions" : "comments"
-      metric_name = parent_type == "submissions" ? "submission_count" : "comment_count"
-      redis_cli = parent_type == "submissions" ? REDIS_SUBMISSIONS : REDIS_COMMENTS
-      found = InsertKeysToRedis.new.hash_get(redis_cli,row[5].to_s) == "1" ? true : false
-      csv << [found, year, file, Time.at(row[0].to_i), row[1], row[2], row[3], row[4], row[5], parent_type]
-#      current_rows << {found: found, source_year: year, source_file: file, time: Time.at(row[0].to_i), subreddit: row[1], comment_id: row[2], comment_id_int: row[3], parent_id: row[4], parent_id_int: row[5], parent_type: parent_type}
-#      if current_rows.length >= 500
-#        while Sidekiq::Queue.new.size > 1000
-#          sleep(1)
-#        end
-#        ParentReference.collection.insert(current_rows) if current_rows.empty? == false
-#        current_rows = []
-#      end
+      daily_counts[Time.parse(row[3]).strftime("%Y-%m-%d")] ||= {"true" => 0, "false" => 0}
+      daily_counts[Time.parse(row[3]).strftime("%Y-%m-%d")][row[0]] += 1
+      hourly_counts[Time.parse(row[3]).strftime("%H")] ||= {"true" => 0, "false" => 0}
+      hourly_counts[Time.parse(row[3]).strftime("%H")][row[0]] += 1
+    end;false
+    daily_counts.each do |time, counts|
+      daily_csv << [time, counts["true"], counts["false"], counts["true"]+counts["false"]]
     end
-    csv.close
+    hourly_counts.each do |time, counts|
+      hourly_csv << [time, counts["true"], counts["false"], counts["true"]+counts["false"]]
+    end
+    daily_csv.close
+    hourly_csv.close
 #    ParentReference.collection.insert(current_rows) if current_rows.empty? == false
   end
 
   def self.kickoff
-    MissingRedditDiagnosticComment.collection.drop
-    MissingRedditDiagnosticSubmission.collection.drop
-    REDIS_SUBMISSIONS.set("total_complete", "0")
-    `ls #{SETTINGS["download_path"]}/comments_ids`.split("\n").each do |year|
-      `ls #{SETTINGS["download_path"]}/comments_ids/#{year}`.split("\n").each do |file|
-        CheckParentReferences.perform_async(year, file, "comments")
+    `ls #{SETTINGS["download_path"]}/comments_marked`.split("\n").each do |year|
+      `ls #{SETTINGS["download_path"]}/comments_marked/#{year}`.split("\n").each do |file|
+        CountParentReferences.perform_async(year, file)
       end
     end
   end
