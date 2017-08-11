@@ -4,11 +4,11 @@ class CountParentReferences
   def perform(year, file)
     daily_counts = {}
     hourly_counts = {}
-    `mkdir #{SETTINGS["download_path"]}/#{data_type}_marked_summarized`
-    `mkdir #{SETTINGS["download_path"]}/#{data_type}_marked_summarized/#{year}`
-    daily_csv = CSV.open("#{SETTINGS["download_path"]}/#{data_type}_marked_summarized/#{year}/daily_#{file}", "w")
-    hourly_csv = CSV.open("#{SETTINGS["download_path"]}/#{data_type}_marked_summarized/#{year}/hourly_#{file}", "w")
-    CSV.foreach("#{SETTINGS["download_path"]}/#{data_type}_marked/#{year}/#{file}") do |row|
+    `mkdir #{SETTINGS["download_path"]}/comments_marked_summarized`
+    `mkdir #{SETTINGS["download_path"]}/comments_marked_summarized/#{year}`
+    daily_csv = CSV.open("#{SETTINGS["download_path"]}/comments_marked_summarized/#{year}/daily_#{file}", "w")
+    hourly_csv = CSV.open("#{SETTINGS["download_path"]}/comments_marked_summarized/#{year}/hourly_#{file}", "w")
+    CSV.foreach("#{SETTINGS["download_path"]}/comments_marked/#{year}/#{file}") do |row|
       daily_counts[Time.parse(row[3]).strftime("%Y-%m-%d")] ||= {"true" => 0, "false" => 0}
       daily_counts[Time.parse(row[3]).strftime("%Y-%m-%d")][row[0]] += 1
       hourly_counts[Time.parse(row[3]).strftime("%H")] ||= {"true" => 0, "false" => 0}
