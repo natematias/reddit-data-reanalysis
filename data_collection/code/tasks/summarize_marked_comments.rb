@@ -6,9 +6,13 @@ class CountParentReferences
     hourly_counts = {}
     `mkdir #{SETTINGS["download_path"]}/comments_marked_summarized`
     `mkdir #{SETTINGS["download_path"]}/comments_marked_summarized/#{year}`
+    count = `wc #{SETTINGS["download_path"]}/comments_marked/#{year}/#{file}`.split(" ").first.to_i
     daily_csv = CSV.open("#{SETTINGS["download_path"]}/comments_marked_summarized/#{year}/daily_#{file}", "w")
     hourly_csv = CSV.open("#{SETTINGS["download_path"]}/comments_marked_summarized/#{year}/hourly_#{file}", "w")
+    i = 0
     CSV.foreach("#{SETTINGS["download_path"]}/comments_marked/#{year}/#{file}") do |row|
+      i +=1
+      puts "#{file}: #{((i/count.to_f)*100).round(2)}" if i % 5000 == 0
       daily_counts[Time.parse(row[3]).strftime("%Y-%m-%d")] ||= {"true" => 0, "false" => 0}
       daily_counts[Time.parse(row[3]).strftime("%Y-%m-%d")][row[0]] += 1
       hourly_counts[Time.parse(row[3]).strftime("%H")] ||= {"true" => 0, "false" => 0}
